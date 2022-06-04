@@ -56,9 +56,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimateComponent.cs" />
     <Compile Include="AnimateInfo.cs" />
-    <Compile Include="MyComponent1.cs" />
+    <Compile Include="Animate_geometries.cs" />
+    <Compile Include="Keyframe_Goo.cs" />
+    <Compile Include="Keyframe_data.cs" />
+    <Compile Include="Explosion.cs" />
+    <Compile Include="Elevate.cs" />
+    <Compile Include="Keyframe_generate.cs" />
+    <Compile Include="Keyframe_Type.cs" />
+    <Compile Include="Looping_SliderComponent.cs" />
+    <Compile Include="Tracker.cs" />
+    <Compile Include="camera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
