@@ -6,7 +6,7 @@ using Grasshopper.GUI;
 using Grasshopper.GUI.Canvas;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
-namespace Animate
+namespace Animate2
 {
     public class Looping_SliderComponent : GH_Param<GH_Number>
     {

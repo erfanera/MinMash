@@ -65,6 +65,7 @@
     <Compile Include="Keyframe_generate.cs" />
     <Compile Include="Keyframe_Type.cs" />
     <Compile Include="Looping_SliderComponent.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="Tracker.cs" />
     <Compile Include="camera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
