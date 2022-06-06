@@ -55,12 +55,14 @@ namespace Animate
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Keyframe", "Keyframe", "etw", GH_ParamAccess.list);
-            
-        }
-        List<keyframeData> allpositions = new List<keyframeData>();
-        double motion = 0;
+            pManager.AddNumberParameter("Keyframe", "Keyframe", "Keyframe", GH_ParamAccess.tree);
+            pManager.AddNumberParameter("time", "time", "time", GH_ParamAccess.tree);
 
+        }
+      
+        double motion = 0;
+        Grasshopper.DataTree<double> parametrs = new Grasshopper.DataTree<double>();
+        Grasshopper.DataTree<double> times = new Grasshopper.DataTree<double>();
         //List<keyframeData> kg = new List<keyframeData>();
         /// <summary>
         /// This is the method that actually does the work.
@@ -81,36 +83,42 @@ namespace Animate
             List<Grasshopper.Kernel.Special.GH_NumberSlider> sliders
               = FindObjectsOfTypeInCurrentGroup<Grasshopper.Kernel.Special.GH_NumberSlider>();
 
+
+            
+
             if (reset)
             {
-                allpositions = new List<keyframeData>();
+                times = new DataTree<double>();
+                parametrs = new DataTree<double>();
                 for (int i = 0; i < sliders.Count; i++)
                 {
                     double annn = decimal.ToDouble(sliders[i].CurrentValue);
-                    var ee = new keyframeData();
-                    ee.values.Add(annn);
-                    ee.times.Add(0);
+                    
+                    Grasshopper.Kernel.Data.GH_Path new_path = new Grasshopper.Kernel.Data.GH_Path(i);
+
+                    parametrs.Add(annn, new_path);
+
+                    times.Add(motion, new_path);
                     
 
-                    allpositions.Add(ee);
                 }
             }
 
 
 
-            if (caputer)
+            if (caputer && animate == false)
             {
                 for (int i = 0; i < sliders.Count; i++)
                 {
                     double currentval = decimal.ToDouble(sliders[i].CurrentValue);
-                    if (allpositions[i].values.Sum() != 0.0)
+                    if (parametrs.Branch(i).Sum() != 0.0)
                     {
                         sliders[i].Slider.DrawControlBackground = true;
                         sliders[i].Slider.DrawControlBorder = true;
 
                         sliders[i].Slider.ControlEdgeColour = Color.Blue;
                         sliders[i].Slider.ControlBackColour = Color.Aquamarine;
-                        if (allpositions[i].values[allpositions[i].values.Count - 1] != currentval)
+                        if (parametrs.Branch(i)[parametrs.Branch(i).Count - 1] != currentval)
                         {
 
 
@@ -121,28 +129,39 @@ namespace Animate
                         }
 
                     }
-                    allpositions[i].values.Add((currentval));
+                    double inst_mo = motion;
+                    int index_recapt = 1000;
+                    bool recapt = false;
+                    for(int t = 0; t < times.Branch(i).Count; t++)
+                    {
+                        double dist = Math.Abs(motion - times.Branch(i)[t]);
+                        if (dist < 0.001)
+                        {
+                            index_recapt = t;
+                            recapt = true;
+                        }
+                        
+                    }
+                    if (recapt)
+                    {
+                        parametrs.Branch(i)[index_recapt] = currentval;
+                    }
+                    else {
+                        times.Branch(i).Add(motion);
+                        parametrs.Branch(i).Add(currentval);
+                    }
                 }
 
             }
-            // GH_Document.SolutionEndEventHandler handle = null;
-            //handle = delegate (Object sender, GH_SolutionEventArgs e) {
 
-            // };
-
-
-            //Instances.ActiveCanvas.Document.SolutionEnd += handle;
             if (animate)
                 OnPingDocument().ScheduleSolution(10, SolutionCallback);
-            //GrasshopperDocument.ScheduleSolution(5, SolutionCallback);
-            List<KeyFrameGoo> kg = new List<KeyFrameGoo>();
-            for(int i = 0; i < allpositions.Count; i++)
-            {
-
-                var kgg = new KeyFrameGoo(allpositions[i]);
-                kg.Add(kgg);
-            }
-            DA.SetDataList(0,  kg);
+           
+          
+           
+            DA.SetDataTree(0,  parametrs);
+            DA.SetDataTree(1, times);
+            
 
         }
 
@@ -164,7 +183,7 @@ namespace Animate
             for (int i = 0; i < sliders.Count; i++)
             {
 
-                Interpolator a = new Interpolator(allpositions[i].values);
+                Interpolator a = new Interpolator(parametrs.Branch(i));
                 sliders[i].Slider.RaiseEvents = false;
                 double result = a.InterpolateCatmullRom(motion);
                 sliders[i].SetSliderValue((decimal)result);
