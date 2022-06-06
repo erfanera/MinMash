@@ -10,7 +10,7 @@ namespace Animate
         /// <summary>
         /// Initializes a new instance of the SettingsParam class.
         /// </summary>
-        public KeyframeParam() : base(new GH_InstanceDescription("Keyframe", "Keyframe", "Contains a collection of keyframes", "Animate", "shit")) { }
+        public KeyframeParam() : base(new GH_InstanceDescription("Keyframe", "Keyframe", "Contains a collection of keyframes", "Animate", "Type_")) { }
 
         /// <summary>
         /// Provides an Icon for the component.

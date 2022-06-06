@@ -33,7 +33,7 @@ namespace Animate
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public Keyframe_generate()
-          : base("MyComponent1", "Nickname",
+          : base("Generate_Keyframe", "Generate_Keyframe",
               "Description",
               "Animate", "Subcategory")
         {
@@ -44,7 +44,7 @@ namespace Animate
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddBooleanParameter("test", "test", "test", GH_ParamAccess.item, false);
+            pManager.AddBooleanParameter("Reset", "R", "test", GH_ParamAccess.item, false);
             pManager.AddBooleanParameter("capture", "capture", " capture", GH_ParamAccess.item, false);
             pManager.AddBooleanParameter("Animate", "animate", "animate", GH_ParamAccess.item, false);
             pManager.AddNumberParameter("motion", "motion", "motion", GH_ParamAccess.item, 0.2);
