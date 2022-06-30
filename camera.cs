@@ -29,7 +29,7 @@ namespace Animate
         {
             pManager.AddPointParameter("Location", "Loc", "camera location", GH_ParamAccess.item);
             pManager.AddPointParameter("Target", "tar", "target object", GH_ParamAccess.item);
-            pManager.AddTextParameter("ViewPort Name", "Name", " name to manipulate", GH_ParamAccess.item , "Front");
+            pManager.AddNumberParameter("Lens Lenght", "Lens", "lens length", GH_ParamAccess.item , 30);
 
         }
 
@@ -55,8 +55,8 @@ namespace Animate
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            string name = "Front";
-            DA.GetData(2, ref name);
+            double focal_length = 0;
+            DA.GetData(2, ref focal_length);
             Point3d position = new Point3d(0, 0, 0);
             Point3d target = new Point3d(0, 0, 0);
             DA.GetData(0, ref position);
@@ -75,7 +75,7 @@ namespace Animate
 
             //Rhino.RhinoDoc.ActiveDoc.Views.ActiveView = non_active_views[name];
             Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.SetCameraLocation(position, true);
-
+            Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.Camera35mmLensLength = focal_length;
             Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.SetCameraDirection(new Vector3d(target - position), true);
             // <custom additional code>
         }

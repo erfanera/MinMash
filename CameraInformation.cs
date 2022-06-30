@@ -3,19 +3,18 @@ using System.Collections.Generic;
 
 using Grasshopper.Kernel;
 using Rhino.Geometry;
-using Animate;
 
 namespace Animate
 {
-    public class Test : GH_Component
+    public class CameraInformation : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public Test()
-          : base("MyComponent1", "Nickname",
+        public CameraInformation()
+          : base("Camera Information", "Camera Information",
               "Description",
-              "Category", "Subcategory")
+              "Animate", "Camera")
         {
         }
 
@@ -24,6 +23,7 @@ namespace Animate
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+           
         }
 
         /// <summary>
@@ -31,6 +31,9 @@ namespace Animate
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddPointParameter("location", "location", "pt", GH_ParamAccess.item);
+            pManager.AddPointParameter("target", "target", "target", GH_ParamAccess.item);
+            pManager.AddNumberParameter("lens", "lens", "lens", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -39,6 +42,15 @@ namespace Animate
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            Plane test_pl;
+            Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.GetCameraFrame(out test_pl);
+            Point3d location = test_pl.Origin;
+            Point3d target = test_pl.Origin + test_pl.Normal;
+            Rhino.DocObjects.ViewInfo eee = new Rhino.DocObjects.ViewInfo(Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport);
+            Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.PushViewInfo(eee, false);
+            double cm=Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport.Camera35mmLensLength;
+            DA.SetData(2,  cm);
+
         }
 
         /// <summary>
@@ -59,7 +71,7 @@ namespace Animate
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("9f68559b-7dfa-43c3-b091-db1e5143e0c3"); }
+            get { return new Guid("3f8817ec-27d6-48de-a934-893a0d47403a"); }
         }
     }
 }

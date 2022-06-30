@@ -13,6 +13,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -32,6 +34,39 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accord, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.3.8.2-alpha\lib\net45\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Extensions.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.Extensions.Core.2.0.2\lib\net45\Accord.Extensions.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Extensions.Imaging.GenericImage, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.Extensions.Imaging.GenericImage.2.0.2\lib\net45\Accord.Extensions.Imaging.GenericImage.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Extensions.Imaging.IO, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.Extensions.Imaging.IO.2.0.2\lib\net45\Accord.Extensions.Imaging.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Extensions.Math, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.Extensions.Math.2.0.2\lib\net45\Accord.Extensions.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math, Version=2.14.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.Math.2.14.0\lib\net40\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Video, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.Video.3.8.2-alpha\lib\net45\Accord.Video.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Video.FFMPEG.x64, Version=3.6.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=AMD64">
+      <HintPath>packages\Accord.Video.FFMPEG.x64.3.6.0\lib\net45\Accord.Video.FFMPEG.x64.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
+      <HintPath>packages\AForge.2.2.5\lib\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL">
+      <HintPath>packages\AForge.Math.2.2.5\lib\AForge.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="FFmpeg.AutoGen, Version=5.0.0.0, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
+      <HintPath>packages\FFmpeg.AutoGen.5.0.0\lib\net45\FFmpeg.AutoGen.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -58,6 +93,7 @@
   <ItemGroup>
     <Compile Include="AnimateInfo.cs" />
     <Compile Include="Animate_geometries.cs" />
+    <Compile Include="Animate_Keyframes.cs" />
     <Compile Include="Keyframe_Goo.cs" />
     <Compile Include="Keyframe_data.cs" />
     <Compile Include="Explosion.cs" />
@@ -65,11 +101,18 @@
     <Compile Include="Keyframe_generate.cs" />
     <Compile Include="Keyframe_Type.cs" />
     <Compile Include="Looping_SliderComponent.cs" />
+    <Compile Include="CameraInformation.cs" />
+    <Compile Include="Counter.cs" />
+    <Compile Include="Section.cs" />
+    <Compile Include="VideoMaker.cs" />
     <Compile Include="PrintedPattern.cs" />
-    <Compile Include="Test.cs" />
     <Compile Include="Tracker.cs" />
     <Compile Include="camera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -92,4 +135,13 @@ Erase "$(TargetPath)"</PostBuildEvent>
     </StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>
+  <Import Project="packages\Accord.Extensions.Imaging.IO.2.0.2\build\Accord.Extensions.Imaging.IO.targets" Condition="Exists('packages\Accord.Extensions.Imaging.IO.2.0.2\build\Accord.Extensions.Imaging.IO.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Accord.Extensions.Imaging.IO.2.0.2\build\Accord.Extensions.Imaging.IO.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Accord.Extensions.Imaging.IO.2.0.2\build\Accord.Extensions.Imaging.IO.targets'))" />
+    <Error Condition="!Exists('packages\Accord.3.8.2-alpha\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Accord.3.8.2-alpha\build\Accord.targets'))" />
+  </Target>
+  <Import Project="packages\Accord.3.8.2-alpha\build\Accord.targets" Condition="Exists('packages\Accord.3.8.2-alpha\build\Accord.targets')" />
 </Project>

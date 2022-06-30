@@ -27,14 +27,14 @@ using GH_IO.Serialization;
 
 namespace Animate
 {
-    public class Keyframe_generate : GH_Component
+    public class Animate_Keyframes : GH_Component
     {
         
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public Keyframe_generate()
-          : base("Generate_Keyframe", "Generate_Keyframe",
+        public Animate_Keyframes()
+          : base("Animate_Keyframe", "Animate_Keyframe",
               "Description",
               "Animate", "Keyframe")
         {
@@ -43,12 +43,12 @@ namespace Animate
         /// <summary>
         /// Registers all the input parameters for this component.
         /// </summary>
+       
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddBooleanParameter("Reset", "R", "test", GH_ParamAccess.item, false);
-            pManager.AddBooleanParameter("capture", "capture", " capture", GH_ParamAccess.item, false);
-            pManager.AddBooleanParameter("Animate", "animate", "animate", GH_ParamAccess.item, false);
+            pManager.AddPointParameter("Keyframes", "Keyframes", "generateKeyfraem", GH_ParamAccess.tree);
             pManager.AddNumberParameter("motion", "motion", "motion", GH_ParamAccess.item, 0.2);
+         
         }
 
         /// <summary>
@@ -57,114 +57,49 @@ namespace Animate
         
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddNumberParameter("Keyframe", "Keyframe", "Keyframe", GH_ParamAccess.tree);
-            pManager.AddNumberParameter("time", "time", "time", GH_ParamAccess.tree);
-            pManager.AddPointParameter("Key", "Keyf", "key", GH_ParamAccess.tree);
+        
+          
+
 
         }
-      
+        List<PolylineCurve> test_crv = new List<PolylineCurve>();
         double motion = 0;
-        Grasshopper.DataTree<Point3d> keyframe = new Grasshopper.DataTree<Point3d>();
+        Grasshopper.DataTree<Point3d>keyframe = new Grasshopper.DataTree<Point3d>();
         Grasshopper.DataTree<double> parametrs = new Grasshopper.DataTree<double>();
-        Grasshopper.DataTree<double> times = new Grasshopper.DataTree<double>();
-        //List<keyframeData> kg = new List<keyframeData>();
-        /// <summary>
-        /// This is the method that actually does the work.
-        /// </summary>
+     
+
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            bool animate = false;
-            DA.GetData(2, ref animate);
-
-            DA.GetData(3, ref motion);
-            bool caputer = false;
-            DA.GetData(1, ref caputer);
-            
-            
-            bool reset = false;
-            DA.GetData(0, ref reset);
-            List<Grasshopper.Kernel.Special.GH_NumberSlider> sliders
-              = FindObjectsOfTypeInCurrentGroup<Grasshopper.Kernel.Special.GH_NumberSlider>();
+          
+      
+           
+            DA.GetData(1, ref motion);
 
 
-            
+            Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_Point> Keyframe = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.GH_Point>();
 
-            if (reset)
-            {
-                times = new DataTree<double>();
-                parametrs = new DataTree<double>();
-                keyframe = new DataTree<Point3d>();
-                for (int i = 0; i < sliders.Count; i++)
+            if (!DA.GetDataTree<Grasshopper.Kernel.Types.GH_Point>(0, out Keyframe)) return;
+
+
+            if (true) { 
+                for (int i = 0; i < Keyframe.Branches.Count; i++)
                 {
-                    double annn = decimal.ToDouble(sliders[i].CurrentValue);
-                    
                     Grasshopper.Kernel.Data.GH_Path new_path = new Grasshopper.Kernel.Data.GH_Path(i);
-
-                    parametrs.Add(annn, new_path);
-
-                    times.Add(motion, new_path);
-                    Point3d pt = new Point3d(motion, annn , 0);
-                    keyframe.Add(pt , new_path);
+                    for(int j = 0; j < Keyframe.Branches[i].Count;j++) {
+                        Point3d a =Keyframe.Branches[i][j].Value;
+                        keyframe.Add(a, new_path);
+                    }
+                
                 }
             }
 
 
-
-            if (caputer && animate == false)
-            {
-                for (int i = 0; i < sliders.Count; i++)
-                {
-                    double currentval = decimal.ToDouble(sliders[i].CurrentValue);
-                    if (parametrs.Branch(i).Sum() != 0.0)
-                    {
-                        sliders[i].Slider.DrawControlBackground = true;
-                        sliders[i].Slider.DrawControlBorder = true;
-
-                        sliders[i].Slider.ControlEdgeColour = Color.Blue;
-                        sliders[i].Slider.ControlBackColour = Color.Aquamarine;
-                        if (parametrs.Branch(i)[parametrs.Branch(i).Count - 1] != currentval)
-                        {
-                            sliders[i].Slider.ControlEdgeColour = Color.Black;
-                            sliders[i].Slider.ControlBackColour = Color.Yellow;
-                        }
-
-                    }
-                    double inst_mo = motion;
-                    int index_recapt = 1000;
-                    bool recapt = false;
-                    for(int t = 0; t < times.Branch(i).Count; t++)
-                    {
-                        double dist = Math.Abs(motion - times.Branch(i)[t]);
-                        if (dist < 0.001)
-                        {
-                            index_recapt = t;
-                            recapt = true;
-                        }
-                        
-                    }
-                    if (recapt)
-                    {
-                        parametrs.Branch(i)[index_recapt] = currentval;
-                        keyframe.Branch(i)[index_recapt] = new Point3d(motion,currentval, 0);
-                    }
-                    else {
-                        times.Branch(i).Add(motion);
-                        parametrs.Branch(i).Add(currentval);
-                        keyframe.Branch(i).Add(new Point3d(motion, currentval, 0));
-                    }
-                }
-
-            }
-
-            if (animate)
-                OnPingDocument().ScheduleSolution(10, SolutionCallback);
+            if(true)
+            OnPingDocument().ScheduleSolution(10, SolutionCallback);
            
           
-           
-            DA.SetDataTree(0,  parametrs);
-            DA.SetDataTree(1, times);
-            DA.SetDataTree(2, keyframe);
+;         
             
 
         }
@@ -186,14 +121,13 @@ namespace Animate
 
             for (int i = 0; i < sliders.Count; i++)
             {
+                
                 PolylineCurve pa = new PolylineCurve(keyframe.Branch(i));
                 //Curve aa = Curve.CreateInterpolatedCurve(keyframe.Branch(i), 3 , CurveKnotStyle.ChordPeriodic);
-
+                test_crv.Add(pa);
                 Curve aa = pa.ToNurbsCurve();
-                Point3d eval = new Point3d(motion ,0,0);
-                double valva = 0;
-
-                
+                Point3d eval = new Point3d(motion , 0,0);
+              
                 //Rhino.Geometry.Intersect.Intersection.//(new(Point3d(motion , 0 ,0)) , new Vector3d(1,0,0)) 
                 //var evants = Rhino.Geometry.Intersect.Intersection.CurveLine(aa, new Line(eval, new Point3d(motion, 10000000, 0)), 0.001, 0.001);
                 var evants = Rhino.Geometry.Intersect.Intersection.CurvePlane(aa, new Plane(eval, new Vector3d(1, 0, 0)), 0.001);
@@ -202,11 +136,11 @@ namespace Animate
 
                 Point3d resu = ccx_event.PointA;
                 double slider_val = resu.Y;
-                Interpolator a = new Interpolator(parametrs.Branch(i));
+                //Interpolator a = new Interpolator(parametrs.Branch(i));
                 sliders[i].Slider.RaiseEvents = false;
-                double result = a.InterpolateCatmullRom(motion);
-                result = slider_val;
-                sliders[i].SetSliderValue((decimal)result);
+                //double result = a.InterpolateCatmullRom(motion);
+                //result = slider_val;
+                sliders[i].SetSliderValue((decimal)slider_val);
 
                 sliders[i].Slider.RaiseEvents = true;
 
@@ -265,7 +199,7 @@ namespace Animate
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("78a35849-dd05-4139-90e8-acc74c565b04"); }
+            get { return new Guid("18a35849-dd05-4139-90e8-acc74c565b04"); }
         }
     }
 }
